@@ -181,7 +181,7 @@ def brush_border_seg(tubule, mask, model=None):
     if model==None:
         tubule = cv.equalizeHist(image_scaling(tubule))
         blurred = cv.medianBlur(tubule, 3)
-        _, thresh = cv.threshold(blurred, blurred.max()*0.6, blurred.max(), cv.THRESH_BINARY)
+        _, thresh = cv.threshold(blurred, blurred.max()*0.7, blurred.max(), cv.THRESH_BINARY)
 
         opened = cv.morphologyEx(thresh, cv.MORPH_OPEN, kernel=np.ones((1,1)), iterations=1)
 
