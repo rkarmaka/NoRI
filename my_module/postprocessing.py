@@ -263,11 +263,12 @@ def filter_brush_border(binary_mask, full_mask, centroid_threshold=5):
 
 
 def get_labeled_mask(image, contour, idx):
+    image = gray_to_rgb(image=image)
 
     cx, cy = get_centroid(contour=contour)
     
-    cv.drawContours(image, [contour], -1, (0,0,0), 2)
+    cv.drawContours(image, [contour], -1, (255,255,0), 2)
     cv.putText(image, str(idx+1), (cx-10, cy-10),
-               cv.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2)
+               cv.FONT_HERSHEY_SIMPLEX, 1, (255,255,0), 2)
     
     return image

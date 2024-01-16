@@ -21,7 +21,7 @@ import cv2 as cv
 #st_time = time.time()
 
 image_path = "/Users/ranit/IAC/Project/Will Trim/_DATA/Batch_2/Batch 1 (healthy kidneys)"
-image_name = "S1_fullpanel_translated.tif"
+image_name = "S1(2)_fullpanel_translated.tif"
 
 # Create a directory to save processed images
 create_directory(f"{image_path}/{image_name.split('.')[0]}")
