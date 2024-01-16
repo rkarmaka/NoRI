@@ -232,7 +232,7 @@ def filter_nuclei(binary_mask, full_mask, circularity_threshold=0.8, area_thresh
 
     return filtered_mask
 
-def filter_brushed_border(binary_mask, full_mask, centroid_threshold=5):
+def filter_brush_border(binary_mask, full_mask, centroid_threshold=5):
     """
     Filter brushed border based on centroid distance.
 
