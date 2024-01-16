@@ -44,14 +44,22 @@ def read_tiff_and_extract_channels(file_path, separate_channels=True):
                 print("Image has 7 channels")
                 protein_channel = image[1, :, :]
                 lipid_channel = image[2, :, :]
+                brush_border_marker = image[5, :, :]
+
+                return [protein_channel, lipid_channel, brush_border_marker]
             elif image.shape[0] == 6:
                 print("Image has 6 channels")
                 protein_channel = image[0, :, :]
                 lipid_channel = image[1, :, :]
+                brush_border_marker = image[4, :, :]
+
+                return [protein_channel, lipid_channel, brush_border_marker]
             elif image.shape[0] == 3:
                 print("Image has 3 channels. Assigning Ch1 as Protein and Ch2 as Lipid")
                 protein_channel = image[0, :, :]
                 lipid_channel = image[1, :, :]
+
+                return [protein_channel, lipid_channel]
             else:
                 print(f"Image has {image.shape[0]} channels")
                 return None
@@ -62,7 +70,6 @@ def read_tiff_and_extract_channels(file_path, separate_channels=True):
         print(f"Error reading {file_path}: {e}")
         return None
 
-    return [protein_channel, lipid_channel]
 
 
 def display_image(image, fig_size=(20, 10), overlay=False, alpha=0.2):

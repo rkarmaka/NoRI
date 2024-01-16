@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 from torch.nn.parallel import DataParallel
 from segment_anything import sam_model_registry, SamAutomaticMaskGenerator
-from my_module.postprocessing import combine_masks, gray_to_rgb, create_circular_kernel, image_scaling, filter_brushed_border, filter_nuclei, filter_lumen
+from my_module.postprocessing import combine_masks, gray_to_rgb, create_circular_kernel, image_scaling, filter_brush_border, filter_nuclei, filter_lumen
 
 import cv2 as cv
 
@@ -82,7 +82,7 @@ def sam_segmentation_single_tile(image, device="cuda"):
 
     return mask
 
-def nuclei_and_brushed_border_seg(tubule, mask, model=None):
+def nuclei_and_brush_border_seg(tubule, mask, model=None):
 
     if model==None:
         tubule = cv.equalizeHist(image_scaling(tubule))
@@ -100,14 +100,14 @@ def nuclei_and_brushed_border_seg(tubule, mask, model=None):
         nuclei_count = len(c)
 
 
-        # Brushed Border Segmentation
+        # Brush Border Segmentation
         _, thresh = cv.threshold(blurred, blurred.max()*0.88, blurred.max(), cv.THRESH_BINARY)
         opened = cv.morphologyEx(thresh, cv.MORPH_OPEN, kernel=np.ones((1,1)), iterations=1)
         nuclei = np.logical_and(opened, mask)
         opened = cv.morphologyEx(nuclei.astype(np.uint8), cv.MORPH_OPEN, kernel=np.ones((1,1)), iterations=2)
-        filtered_brushed_border = filter_brushed_border(opened, mask)
+        filtered_brush_border = filter_brush_border(opened, mask)
 
-        c, _ = cv.findContours(filtered_brushed_border.astype(np.uint8), cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        c, _ = cv.findContours(filtered_brush_border.astype(np.uint8), cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         if len(c)==0:
             bb_count = False
         else:
@@ -115,7 +115,7 @@ def nuclei_and_brushed_border_seg(tubule, mask, model=None):
 
 
 
-    return filtered_nuclei, filtered_brushed_border, nuclei_count, bb_count
+    return filtered_nuclei, filtered_brush_border, nuclei_count, bb_count
 
 def lumen_seg(tubule, mask, model=None):
     """
@@ -155,4 +155,45 @@ def lumen_seg(tubule, mask, model=None):
 
     return filtered, lumen_count
 
-    return filtered
+
+def nuclei_seg(tubule, mask, model=None):
+
+    if model==None:
+        tubule = cv.equalizeHist(image_scaling(tubule))
+        blurred = cv.medianBlur(tubule, 3)
+
+
+        # Nuclei Segmentation
+        _, thresh = cv.threshold(blurred, blurred.max()*0.15, blurred.max(), cv.THRESH_BINARY_INV)
+        opened = cv.morphologyEx(thresh, cv.MORPH_OPEN, kernel=create_circular_kernel(2), iterations=1)
+        nuclei = np.logical_and(opened, mask)
+        opened = cv.morphologyEx(nuclei.astype(np.uint8), cv.MORPH_OPEN, kernel=create_circular_kernel(1), iterations=2)
+        filtered_nuclei = filter_nuclei(opened, mask, circularity_threshold=0.75, area_threshold_bot=50, area_threshold_top=500)
+
+        c, _ = cv.findContours(filtered_nuclei.astype(np.uint8), cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        nuclei_count = len(c)
+
+
+    return filtered_nuclei, nuclei_count
+
+
+def brush_border_seg(tubule, mask, model=None):
+    if model==None:
+        tubule = cv.equalizeHist(image_scaling(tubule))
+        blurred = cv.medianBlur(tubule, 3)
+        _, thresh = cv.threshold(blurred, blurred.max()*0.6, blurred.max(), cv.THRESH_BINARY)
+
+        opened = cv.morphologyEx(thresh, cv.MORPH_OPEN, kernel=np.ones((1,1)), iterations=1)
+
+        nuclei = np.logical_and(opened, mask)
+        opened = cv.morphologyEx(nuclei.astype(np.uint8), cv.MORPH_OPEN, kernel=np.ones((1,1)), iterations=2)
+
+        filtered = filter_brush_border(opened, mask, centroid_threshold=30)
+
+        c, _ = cv.findContours(filtered.astype(np.uint8), cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        if len(c)==0:
+            bb_count = False
+        else:
+            bb_count = True
+
+    return filtered, bb_count
