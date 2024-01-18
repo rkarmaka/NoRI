@@ -181,19 +181,19 @@ def brush_border_seg(tubule, mask, model=None):
     if model==None:
         tubule = cv.equalizeHist(image_scaling(tubule))
         blurred = cv.medianBlur(tubule, 3)
-        _, thresh = cv.threshold(blurred, blurred.max()*0.7, blurred.max(), cv.THRESH_BINARY)
+        _, thresh = cv.threshold(blurred, blurred.max()*0.88, blurred.max(), cv.THRESH_BINARY)
 
         opened = cv.morphologyEx(thresh, cv.MORPH_OPEN, kernel=np.ones((1,1)), iterations=1)
 
         nuclei = np.logical_and(opened, mask)
-        opened = cv.morphologyEx(nuclei.astype(np.uint8), cv.MORPH_OPEN, kernel=np.ones((1,1)), iterations=2)
+        opened = cv.morphologyEx(nuclei.astype(np.uint8), cv.MORPH_OPEN, kernel=np.ones((2,2)), iterations=1)
 
-        filtered = filter_brush_border(opened, mask, centroid_threshold=30)
+#        filtered = filter_brush_border(opened, mask, centroid_threshold=30)
 
-        c, _ = cv.findContours(filtered.astype(np.uint8), cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        c, _ = cv.findContours(opened.astype(np.uint8), cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         if len(c)==0:
             bb_count = False
         else:
             bb_count = True
 
-    return filtered, bb_count
+    return opened, bb_count

@@ -21,7 +21,7 @@ import cv2 as cv
 #st_time = time.time()
 
 image_path = "/Users/ranit/IAC/Project/Will Trim/_DATA/Batch_2/Batch 1 (healthy kidneys)"
-image_name = "S1(2)_fullpanel_translated.tif"
+image_name = "S5(2)_fullpanel_translated.tif"
 
 # Create a directory to save processed images
 create_directory(f"{image_path}/{image_name.split('.')[0]}")
@@ -39,6 +39,7 @@ ch1, ch2, ch5 = read_tiff_and_extract_channels(f"{image_path}/{image_name}")
 # Pre-process for contrast enhancement
 print('Preprocessing...')
 preprocessed = preprocess_images(ch1, ch2)
+
 
 # Record end time
 #end_time = time.time()

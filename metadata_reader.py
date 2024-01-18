@@ -111,7 +111,7 @@ def read_tiff_file_names(root_folder):
 
 if __name__ == "__main__":
     # Replace '/path/to/your/directory' with the actual path to your directory containing TIFF files
-    root_folder = "/Users/ranit/IAC/Project/Will Trim/_DATA/Batch_2"
+    root_folder = "/Users/ranit/IAC/Project/Will Trim/_DATA/Batch_2/Batch 1 (healthy kidneys)"
 
     tiff_files = read_tiff_file_names(root_folder=root_folder)
 
