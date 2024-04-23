@@ -1,77 +1,77 @@
 import os
 import numpy as np
+import logging
+from typing import List, Tuple
 
+# Configure logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-
-def create_directory(directory_path):
+def create_directory(directory_path: str) -> None:
     """
     Creates a directory if it does not exist.
 
     Args:
         directory_path (str): Path of the directory to be created.
-
-    Returns:
-        None
     """
     try:
-        # Attempt to create the directory
         os.makedirs(directory_path)
-        print(f"Directory '{directory_path}' created successfully.")
+        logging.info(f"Directory '{directory_path}' created successfully.")
     except FileExistsError:
-        print(f"Directory '{directory_path}' already exists.")
+        logging.warning(f"Directory '{directory_path}' already exists.")
+    except OSError as e:
+        logging.error(f"Error creating directory {directory_path}: {e}")
 
-
-
-def read_tiff_file_names(root_folder):
-    tiff_files = []
-
-    for root, _, files in os.walk(root_folder):
-        for file in files:
-            if file.lower().endswith('.tif') or file.lower().endswith('.tiff'):
-                file_path = os.path.join(root, file)
-                tiff_files.append(file_path)
-
-    return tiff_files
-
-
-
-
-def transpose_input_image(image):
-    h,w,_ = image.shape
-
-    if h>w:
-        return np.transpose(image, (1,0,2)), True
-    else:
-        return image, False
-    
-
-
-
-def pad_image(image, tile_shape, stride):
-    image_h, image_w, image_c = image.shape
-    tile_h, tile_w = tile_shape
-    w_new = int(stride*np.ceil((image_w - tile_w) / stride)) + tile_w
-    new_image = np.zeros((image_h, w_new, image_c), dtype='uint8')
-    
-    new_image[:image_h, :image_w,:] = image
-
-    return new_image
-
-
-
-def intensity_scaling(image, max=255):
+def read_tiff_file_names(root_folder: str) -> List[str]:
     """
-    Scale the intensity levels of an image to the range [0, max].
+    Returns a list of full paths for TIFF files within a given directory.
 
-    Parameters:
-    - image (numpy.ndarray): Input image.
-    - max (int): Maximum intensity value (default is 255).
+    Args:
+        root_folder (str): Root directory to search for TIFF files.
 
     Returns:
-    - numpy.ndarray: Scaled image.
+        List[str]: List of file paths.
     """
-    if image.size == 0:
-        print("Error: Empty image provided.")
-        return None  # You can customize this return value based on your needs
+    tiff_files = [
+        os.path.join(root, file)
+        for root, _, files in os.walk(root_folder)
+        for file in files if file.lower().endswith(('.tif', '.tiff'))
+    ]
+    logging.info(f"Found {len(tiff_files)} TIFF files in {root_folder}.")
+    return tiff_files
+
+def transpose_input_image(image: np.ndarray) -> Tuple[np.ndarray, bool]:
+    """
+    Transpose the image if its height is greater than its width.
+
+    Args:
+        image (np.ndarray): The image array.
+
+    Returns:
+        Tuple[np.ndarray, bool]: (Transposed image, True if transposed, otherwise False).
+    """
+    h, w, _ = image.shape
+    if h > w:
+        logging.debug("Transposing image because height > width.")
+        return np.transpose(image, (1, 0, 2)), True
     else:
-        return (((image - image.min()) / (image.max() - image.min())) * max).astype(np.uint8)
+        return image, False
+
+def pad_image(image: np.ndarray, tile_shape: Tuple[int, int], stride: int) -> np.ndarray:
+    """
+    Pads the image to fit the tile shape based on the stride.
+
+    Args:
+        image (np.ndarray): Image to pad.
+        tile_shape (Tuple[int, int]): Height and width of the tile.
+        stride (int): Stride for tiling.
+
+    Returns:
+        np.ndarray: Padded image.
+    """
+    image_h, image_w, image_c = image.shape
+    tile_h, tile_w = tile_shape
+    w_new = int(stride * np.ceil((image_w - tile_w) / stride)) + tile_w
+    new_image = np.zeros((image_h, w_new, image_c), dtype=image.dtype)
+    new_image[:image_h, :image_w, :] = image
+    logging.debug(f"Padded image to new width {w_new}.")
+    return new_image
