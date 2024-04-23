@@ -29,16 +29,3 @@ def preprocess_images(image1, image2):
 
     return cv.equalizeHist(equalized)
 
-def normalize_intensity_levels(image, max=255):
-    """
-    Normalize the intensity levels of an image to the range [0, max].
-
-    Parameters:
-    - image (numpy.ndarray): Input image.
-    - max (int): Maximum intensity value (default is 255).
-
-    Returns:
-    - numpy.ndarray: Normalized image.
-    """
-    return (((image - image.min()) / (image.max() - image.min())) * max).astype(np.uint8)
-
