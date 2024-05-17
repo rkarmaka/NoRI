@@ -6,7 +6,6 @@ from nori_modules.image_processing import combine_input_channels, normalize_inte
 from nori_modules.segmentation import sam_segmentation_tiled
 from nori_modules.utils import read_tiff_file_names, transpose_input_image, pad_image
 
-import time
 
 # Constants
 ROOT_FOLDER: str = "/Users/ranit/IAC/Project/Will Trim/analysis/all_images(processed)/test/v3"
@@ -19,7 +18,6 @@ DEVICE: str = 'cpu'  # 'cuda' for NVIDIA GPU
 
 def main() -> None:
     for tiff_file in TIFF_FILES:
-        st_time = time.time()
         image_name: str = os.path.basename(tiff_file).split('.')[0]
         print(f'Loading image {image_name}')
         
@@ -30,9 +28,7 @@ def main() -> None:
             # SAM segmentation
             print('Tubule segmentation...')
             process_and_save_image(image, image_name, image_transposed)
-            en_time = time.time()
-            print(en_time - st_time)
-
+        
         except Exception as e:
             print(f"Error processing {image_name}: {e}")
 
