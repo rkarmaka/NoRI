@@ -2,11 +2,10 @@
 ![nori](https://github.com/rkarmaka/NoRI/assets/16607915/ab24c59f-3ba9-4171-b6d6-e3ae4a527a71)
 
 # NoRI
-
-
 Normalized Raman Imaging (NoRI) is a high-resolution imaging technique that measures protein, lipid, and water concentrations in cells and tissues by normalizing Raman signals. This method provides detailed insights into tissue states and the effects of various conditions by analyzing the protein and lipid content. In this project, we use NoRI to examine kidney images, focusing on the tubules as the main structures, along with substructures such as the nucleus, brush border, and lumen. Additionally, different tubule markers like Lectin, Uro, and AQP2 are analyzed to classify tubule types. While NoRI excels at imaging intricate structures, analyzing these complex images remains a challenge due to their delicate architecture.
 
 The objective of this project is to develop advanced image analysis methods to address these challenges. The tasks are divided into three main components: segmenting the tubules, segmenting the substructures, and measuring the amount of lipid and protein per tubule. By achieving these goals, we aim to enhance the understanding of kidney tissue states and improve the ability to analyze the effects of various conditions on these tissues. This project will leverage NoRI's capabilities to provide a comprehensive and quantitative analysis of kidney images, ultimately contributing to better diagnostic and research outcomes.
+
 
 ## Table of Contents
 - [Installation](#installation)
@@ -17,8 +16,6 @@ The objective of this project is to develop advanced image analysis methods to a
 - [References](#references)
 
 ## Installation
-
-Temp
 
 ```bash
 git clone https://github.com/rkarmaka/NoRI.git
